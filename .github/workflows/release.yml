@@ -19,8 +19,6 @@ jobs:
         include:
           - os: windows-latest
             artifact: windows
-          - os: ubuntu-latest
-            artifact: linux
 
     steps:
     - uses: actions/checkout@v4
@@ -34,9 +32,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - uses: android-actions/setup-android@v3
-    - if: matrix.os == 'ubuntu'
-      run: |
-        sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils
+    - run: npm i --legacy-peer-deps
     - run: npm i --legacy-peer-deps
     - run: npm i luna-drag-selector --legacy-peer-deps
     - run: |
@@ -50,7 +46,6 @@ jobs:
         name: ${{ matrix.artifact }}
         path: |
           release/**/*.exe
-          release/**/*.AppImage
           !release/**/win-unpacked/
 
   release:
@@ -61,11 +56,8 @@ jobs:
     - uses: actions/download-artifact@v4
       with:
         path: artifacts
-    - name: List artifacts
-      run: find artifacts -type f | head -20
     - uses: softprops/action-gh-release@v2
       with:
         files: |
           artifacts/**/*.exe
-          artifacts/**/*.AppImage
         generate_release_notes: true
