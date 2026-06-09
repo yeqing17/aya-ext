@@ -38,6 +38,7 @@ jobs:
       run: |
         sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils
     - run: npm i --legacy-peer-deps
+    - run: npm i luna-drag-selector --legacy-peer-deps
     - run: |
         npm run adb
         npm run server
