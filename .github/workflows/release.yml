@@ -37,8 +37,8 @@ jobs:
     - if: matrix.os == 'ubuntu'
       run: |
         sudo apt-get install --no-install-recommends -y icnsutils graphicsmagick xz-utils
+    - run: npm i --legacy-peer-deps
     - run: |
-        npm i
         npm run adb
         npm run server
         npm run scrcpy
