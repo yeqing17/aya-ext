@@ -177,5 +177,12 @@
   "source": "源",
   "destination": "目标",
   "duration": "时长",
-  "preview": "预览"
+  "preview": "预览",
+  "manageCommands": "管理命令",
+  "commandTitle": "标题",
+  "commandContent": "命令",
+  "addCommand": "添加",
+  "editCommand": "保存",
+  "deleteCommandConfirm": "确定要删除命令 \"{{name}}\" 吗？",
+  "keyword": "关键字"
 }

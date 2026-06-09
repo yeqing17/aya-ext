@@ -29,10 +29,12 @@ export default observer(function Logcat() {
     priority?: number
     package?: string
     tag?: string
+    message?: string
   }>({})
   const logcatRef = useRef<Logcat>(null)
   const entriesRef = useRef<any[]>([])
   const logcatIdRef = useRef('')
+  const messageFilterRef = useRef('')
 
   const { device } = store
 
@@ -42,8 +44,11 @@ export default observer(function Logcat() {
         return
       }
       if (logcatRef.current) {
-        logcatRef.current.append(entry)
         entriesRef.current.push(entry)
+        const keyword = messageFilterRef.current
+        if (!keyword || entry.message.toLowerCase().includes(keyword.toLowerCase())) {
+          logcatRef.current.append(entry)
+        }
       }
     }
     const offLogcatEntry = main.on('logcatEntry', onLogcatEntry)
@@ -60,6 +65,20 @@ export default observer(function Logcat() {
       }
     }
   }, [])
+
+  useEffect(() => {
+    const newMessage = filter.message || ''
+    const oldMessage = messageFilterRef.current
+    messageFilterRef.current = newMessage
+    if (newMessage !== oldMessage && logcatRef.current) {
+      logcatRef.current.clear()
+      entriesRef.current.forEach((entry) => {
+        if (!newMessage || entry.message.toLowerCase().includes(newMessage.toLowerCase())) {
+          logcatRef.current!.append(entry)
+        }
+      })
+    }
+  }, [filter.message])
 
   if (store.panel !== 'logcat') {
     if (!paused && logcatIdRef.current) {
@@ -150,6 +169,12 @@ export default observer(function Logcat() {
                 tag: val,
               })
               break
+            case 'message':
+              setFilter({
+                ...filter,
+                message: val,
+              })
+              break
           }
         }}
       >
@@ -184,6 +209,11 @@ export default observer(function Logcat() {
           keyName="tag"
           placeholder={t('tag')}
           value={filter.tag || ''}
+        />
+        <LunaToolbarInput
+          keyName="message"
+          placeholder={t('keyword')}
+          value={filter.message || ''}
         />
         <LunaToolbarSpace />
         <ToolbarIcon

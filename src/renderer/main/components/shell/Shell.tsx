@@ -16,6 +16,7 @@ import find from 'licia/find'
 import idxOf from 'licia/idxOf'
 import truncate from 'licia/truncate'
 import { Terminal } from '@xterm/xterm'
+import CustomCommandsModal from './CustomCommandsModal'
 
 interface IShell {
   id: string
@@ -27,6 +28,8 @@ interface IShell {
 export default observer(function Shell() {
   const [shells, setShells] = useState<Array<IShell>>([])
   const [commandPaletteVisible, setCommandPaletteVisible] = useState(false)
+  const [customCommandsModalVisible, setCustomCommandsModalVisible] = useState(false)
+  const [customCommands, setCustomCommands] = useState<Array<{title: string; command: string}>>([])
   const [selectedShell, setSelectedShell] = useState<IShell>({
     id: '',
     name: '',
@@ -36,6 +39,17 @@ export default observer(function Shell() {
   const { device } = store
 
   useEffect(() => add(), [])
+
+  useEffect(() => {
+    loadCustomCommands()
+  }, [])
+
+  async function loadCustomCommands() {
+    const cmds = await main.getSettingsStore('customCommands')
+    if (cmds) {
+      setCustomCommands(cmds as Array<{title: string; command: string}>)
+    }
+  }
 
   function add() {
     const id = uuid()
@@ -89,7 +103,7 @@ export default observer(function Shell() {
     )
   })
 
-  const commands = map(getCommands(), ([title, command]) => {
+  const commands = map([...getBuiltInCommands(), ...customCommands.map(c => [c.title, c.command + '\n'] as [string, string])], ([title, command]) => {
     return {
       title: `${title} (${truncate(command, 95 - title.length)})`,
       handler: () => {
@@ -128,6 +142,11 @@ export default observer(function Shell() {
           />
           <LunaToolbarSpace />
           <ToolbarIcon
+            icon="setting"
+            title={t('manageCommands')}
+            onClick={() => setCustomCommandsModalVisible(true)}
+          />
+          <ToolbarIcon
             icon="list"
             title={t('shortcut')}
             onClick={() => setCommandPaletteVisible(true)}
@@ -143,12 +162,19 @@ export default observer(function Shell() {
           onClose={() => setCommandPaletteVisible(false)}
           commands={commands}
         />
+        <CustomCommandsModal
+          visible={customCommandsModalVisible}
+          onClose={() => {
+            setCustomCommandsModalVisible(false)
+            loadCustomCommands()
+          }}
+        />
       </div>
     </div>
   )
 })
 
-function getCommands() {
+function getBuiltInCommands() {
   const commands = [
     [t('reboot'), 'reboot\n'],
     [t('rebootRecovery'), 'reboot recovery\n'],

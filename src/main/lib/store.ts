@@ -26,5 +26,6 @@ export const getSettingsStore = memoize(function () {
     useNativeTitlebar: false,
     adbPath: '',
     killAdbWhenExit: false,
+    customCommands: [] as Array<{ title: string; command: string }>,
   })
 })

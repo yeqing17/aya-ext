@@ -177,5 +177,12 @@
   "source": "Source",
   "destination": "Destination",
   "duration": "Duration",
-  "preview": "Preview"
+  "preview": "Preview",
+  "manageCommands": "Manage Commands",
+  "commandTitle": "Title",
+  "commandContent": "Command",
+  "addCommand": "Add",
+  "editCommand": "Save",
+  "deleteCommandConfirm": "Are you sure you want to delete command \"{{name}}\"?",
+  "keyword": "Keyword"
 }
