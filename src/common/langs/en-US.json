@@ -184,5 +184,6 @@
   "addCommand": "Add",
   "editCommand": "Save",
   "deleteCommandConfirm": "Are you sure you want to delete command \"{{name}}\"?",
-  "keyword": "Keyword"
+  "keyword": "Keyword",
+  "noData": "No data"
 }

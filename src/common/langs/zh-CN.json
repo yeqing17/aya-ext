@@ -184,5 +184,6 @@
   "addCommand": "添加",
   "editCommand": "保存",
   "deleteCommandConfirm": "确定要删除命令 \"{{name}}\" 吗？",
-  "keyword": "关键字"
+  "keyword": "关键字",
+  "noData": "暂无数据"
 }
