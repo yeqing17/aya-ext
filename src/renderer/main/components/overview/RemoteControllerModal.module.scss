@@ -3,46 +3,74 @@
 .remote-controller {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 40px;
+  align-items: stretch;
+  gap: 20px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding: #{$padding}px;
   border: 1px solid var(--color-border);
   border-radius: #{$border-radius-s-m}px;
   background: var(--color-bg-container-darker);
 }
 
-.top,
-.bottom {
-  display: flex;
-  width: 100%;
-  padding: #{$padding}px;
+.section {
+  h3,
+  p {
+    margin: 0 0 8px;
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: normal;
+  }
 }
 
-.button {
-  flex: 1;
+.control-row {
   display: flex;
   justify-content: center;
-  span {
-    display: block;
-    width: 50px;
-    height: 50px;
-    background: var(--color-fill-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    &:active {
-      background: var(--color-fill-tertiary);
-    }
+  gap: 10px;
+}
+
+.key-button {
+  min-width: 50px;
+  min-height: 50px;
+  padding: 6px;
+  border: 0;
+  color: var(--color-text);
+  background: var(--color-fill-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.1s;
+  &:hover {
+    background: var(--color-fill-tertiary);
   }
-  .back {
-    width: 100px;
-    border-radius: 50px;
+  &:active {
+    background: var(--color-fill-tertiary);
   }
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.key-text {
+  font-size: 11px;
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .direction-pad {
   width: 200px;
   height: 200px;
+  align-self: center;
   background: var(--color-fill-secondary);
   border-radius: 50%;
   overflow: hidden;
@@ -56,19 +84,14 @@
   position: absolute;
   width: 50%;
   height: 50%;
-  &:active {
+  border-radius: 0;
+  &:active,
+  &:hover {
     background: var(--color-fill-tertiary);
   }
-  &:after {
-    content: '';
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: var(--color-text);
+  span {
+    pointer-events: none;
+    transform: rotate(-45deg);
   }
 }
 
@@ -76,16 +99,16 @@
   position: absolute;
   width: 50%;
   height: 50%;
+  min-width: 0;
+  min-height: 0;
   border-radius: 50%;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   background: var(--color-bg-container);
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  &:active {
+  &:active,
+  &:hover {
     background: var(--color-bg-container-darker);
   }
 }
@@ -106,10 +129,81 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, 20%) rotate(45deg);
+  span {
+    transform: rotate(135deg);
+  }
 }
 
 .left {
   top: 50%;
   right: 50%;
   transform: translate(-20%, -50%) rotate(45deg);
+}
+
+.media-grid,
+.extra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.media-grid .key-button,
+.extra-grid .key-button {
+  width: 100%;
+  border-radius: #{$border-radius-s-m}px;
+}
+
+.more-controls {
+  summary {
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: 8px;
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+  h3 {
+    margin: 12px 0 0;
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: normal;
+    text-align: center;
+  }
+  p {
+    margin: 4px 0 8px;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    text-align: center;
+  }
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+  .key-button {
+    width: 100%;
+    min-width: 0;
+    border-radius: #{$border-radius-s-m}px;
+  }
+}
+
+@media (max-width: 480px) {
+  .remote-controller {
+    padding: 8px;
+  }
+  .direction-pad {
+    width: 180px;
+    height: 180px;
+  }
+  .control-row {
+    gap: 6px;
+  }
+  .key-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }

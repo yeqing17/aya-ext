@@ -17,6 +17,7 @@ import contain from 'licia/contain'
 import * as window from 'share/main/lib/window'
 import fs from 'fs-extra'
 import { getSettingsStore } from './store'
+import { REMOTE_KEY_CODES } from 'common/remote-controller'
 import isWindows from 'licia/isWindows'
 import isEmpty from 'licia/isEmpty'
 import * as base from './adb/base'
@@ -312,6 +313,16 @@ const pairDevice: IpcPairDevice = async function (host, port, password) {
 }
 
 const inputKey: IpcInputKey = async function (deviceId, keyCode) {
+  if (
+    typeof deviceId !== 'string' ||
+    isStrBlank(deviceId) ||
+    !Number.isSafeInteger(keyCode)
+  ) {
+    throw new Error('Invalid input key')
+  }
+  if (!REMOTE_KEY_CODES.has(keyCode)) {
+    throw new Error('Unsupported input key')
+  }
   await base.shell(deviceId, `input keyevent ${keyCode}`)
 }
 

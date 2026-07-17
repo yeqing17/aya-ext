@@ -1,3 +1,10 @@
+## v2.0.0 (17 Jul 2026)
+
+* feat: expand remote controller with system, navigation, media, TV and number keys
+* feat: support press-and-hold repeat for directional, volume and media controls
+* fix: validate remote key events before sending them to ADB
+* fix: improve remote controller accessibility and responsive layout
+
 ## v1.14.2 (28 Nov 2025)
 
 * fix: application icon display error [#151](https://github.com/liriliri/aya/issues/151)

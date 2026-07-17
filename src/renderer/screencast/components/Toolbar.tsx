@@ -4,6 +4,7 @@ import LunaToolbar, {
   LunaToolbarSpace,
 } from 'luna-toolbar/react'
 import ToolbarIcon from 'share/renderer/components/ToolbarIcon'
+import { notify } from 'share/renderer/lib/util'
 import { t } from 'common/util'
 import Style from './Toolbar.module.scss'
 import store from '../store'
@@ -33,7 +34,14 @@ export default observer(function Toolbar() {
   }
 
   function inputKey(keyCode: AndroidKeyCode) {
-    return () => main.inputKey(device.id, keyCode)
+    return () => {
+      if (!device) {
+        return
+      }
+      main.inputKey(device.id, keyCode).catch(() =>
+        notify(t('inputKeyErr'), { icon: 'error' })
+      )
+    }
   }
 
   async function injectText() {

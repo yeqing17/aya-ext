@@ -2,102 +2,109 @@ import LunaModal from 'luna-modal/react'
 import { observer } from 'mobx-react-lite'
 import { createPortal } from 'react-dom'
 import { t } from 'common/util'
+import {
+  getRemoteKey,
+  getRemoteKeys,
+  RemoteKeyDefinition,
+} from 'common/remote-controller'
 import { IModalProps } from 'share/common/types'
+import { notify } from 'share/renderer/lib/util'
 import Style from './RemoteControllerModal.module.scss'
-import className from 'licia/className'
 import store from '../../store'
-import { AndroidKeyCode } from '@yume-chan/scrcpy'
+import RemoteKeyButton from './RemoteKeyButton'
+
+const dpadKeys = {
+  center: requiredKey('dpadCenter'),
+  up: requiredKey('dpadUp'),
+  right: requiredKey('dpadRight'),
+  down: requiredKey('dpadDown'),
+  left: requiredKey('dpadLeft'),
+}
 
 export default observer(function RemoteControllerModal(props: IModalProps) {
-  function inputKey(keyCode: AndroidKeyCode) {
-    return () => {
-      if (!store.device) {
-        return
-      }
-      main.inputKey(store.device.id, keyCode)
+  async function inputKey(keyCode: number) {
+    const device = store.device
+    if (!device) {
+      return
     }
+
+    try {
+      await main.inputKey(device.id, keyCode)
+    } catch (error) {
+      notify(t('inputKeyErr'), { icon: 'error' })
+      throw error
+    }
+  }
+
+  function renderKey(remoteKey: RemoteKeyDefinition, className?: string) {
+    return (
+      <RemoteKeyButton
+        key={remoteKey.id}
+        remoteKey={remoteKey}
+        className={className}
+        disabled={!store.device}
+        onPress={inputKey}
+      />
+    )
   }
 
   return createPortal(
     <LunaModal
       title={t('remoteController')}
-      width={400}
+      width={460}
       visible={props.visible}
       onClose={props.onClose}
     >
       <div className={Style.remoteController}>
-        <div className={Style.top}>
-          <div className={Style.button}>
-            <span
-              className="icon-power"
-              title={t('power')}
-              onClick={inputKey(AndroidKeyCode.Power)}
-            />
+        <section className={Style.section}>
+          <h3>{t('systemControls')}</h3>
+          <div className={Style.controlRow}>
+            {getRemoteKeys('system').map((key) => renderKey(key))}
           </div>
-          <div className={Style.button}>
-            <span
-              title={t('volumeDown')}
-              className="icon-volume-down"
-              onClick={inputKey(AndroidKeyCode.VolumeDown)}
-            />
-          </div>
-          <div className={Style.button}>
-            <span
-              className="icon-volume"
-              title={t('volumeUp')}
-              onClick={inputKey(AndroidKeyCode.VolumeUp)}
-            />
-          </div>
-        </div>
+        </section>
+
         <div className={Style.directionPad}>
-          <div
-            className={Style.ok}
-            onClick={inputKey(AndroidKeyCode.AndroidDPadCenter)}
-          >
-            OK
-          </div>
-          <div
-            className={Style.up}
-            onClick={inputKey(AndroidKeyCode.ArrowUp)}
-          />
-          <div
-            className={Style.right}
-            onClick={inputKey(AndroidKeyCode.ArrowRight)}
-          />
-          <div
-            className={Style.down}
-            onClick={inputKey(AndroidKeyCode.ArrowDown)}
-          />
-          <div
-            className={Style.left}
-            onClick={inputKey(AndroidKeyCode.ArrowLeft)}
-          />
+          {renderKey(dpadKeys.center, Style.ok)}
+          {renderKey(dpadKeys.up, Style.up)}
+          {renderKey(dpadKeys.right, Style.right)}
+          {renderKey(dpadKeys.down, Style.down)}
+          {renderKey(dpadKeys.left, Style.left)}
         </div>
-        <div className={Style.bottom}>
-          <div className={Style.button}>
-            <span
-              title={t('home')}
-              className="icon-circle"
-              onClick={inputKey(AndroidKeyCode.AndroidHome)}
-            />
+
+        <section className={Style.section}>
+          <h3>{t('navigationControls')}</h3>
+          <div className={Style.controlRow}>
+            {getRemoteKeys('navigation').map((key) => renderKey(key))}
           </div>
-          <div className={Style.button}>
-            <span
-              title={t('back')}
-              className={className('icon-back', Style.back)}
-              onClick={inputKey(AndroidKeyCode.AndroidBack)}
-            />
+        </section>
+
+        <section className={Style.section}>
+          <h3>{t('mediaControls')}</h3>
+          <div className={Style.mediaGrid}>
+            {getRemoteKeys('media').map((key) => renderKey(key))}
           </div>
-          <div className={Style.button}>
-            <span
-              title={t('appSwitch')}
-              className="icon-square"
-              onClick={inputKey(AndroidKeyCode.AndroidAppSwitch)}
-            />
+        </section>
+
+        <details className={Style.moreControls}>
+          <summary>{t('moreControls')}</summary>
+          <div className={Style.extraGrid}>
+            {getRemoteKeys('extra').map((key) => renderKey(key))}
           </div>
-        </div>
+          <h3>{t('tvControls')}</h3>
+          <p>{t('tvControlsHint')}</p>
+          <div className={Style.extraGrid}>
+            {getRemoteKeys('tv').map((key) => renderKey(key))}
+          </div>
+          <div className={Style.numberGrid}>
+            {getRemoteKeys('number').map((key) => renderKey(key))}
+          </div>
+        </details>
       </div>
     </LunaModal>,
     document.body
   )
 })
+
+function requiredKey(id: string) {
+  return getRemoteKey(id) as RemoteKeyDefinition
+}
